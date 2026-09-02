@@ -63,7 +63,31 @@ function updateBeaver(){
   const index = nearestGuideStop();
   const stop = guideStops[index];
   
-  beaverGuide.style.transform = `translate3d(calc(${stop.x}vw - 50%), calc(${stop.y}vh - 50%), 0) scale(${stop.scale || 1})`;
+  let xStr = `calc(${stop.x}vw - 50%)`;
+  let yStr = `calc(${stop.y}vh - 50%)`;
+
+  if (stop.id === 'vision') {
+    const grid = document.querySelector('#vision .vision-grid');
+    if (grid) {
+      const rect = grid.getBoundingClientRect();
+      const bw = beaverGuide.offsetWidth || 200;
+      const bh = beaverGuide.offsetHeight || 200;
+      xStr = `${Math.min(rect.right + 30, window.innerWidth - bw)}px`;
+      yStr = `${rect.top + rect.height / 2 - bh / 2}px`;
+    }
+  } else if (stop.id === 'download') {
+    const card = document.querySelector('#download .qr-wrap');
+    if (card) {
+      const rect = card.getBoundingClientRect();
+      const bw = beaverGuide.offsetWidth || 200;
+      const bh = beaverGuide.offsetHeight || 200;
+      xStr = `${Math.max(20, rect.left - bw - 20)}px`;
+      yStr = `${rect.bottom - bh}px`;
+      stop.face = 'right';
+    }
+  }
+
+  beaverGuide.style.transform = `translate3d(${xStr}, ${yStr}, 0) scale(${stop.scale || 1})`;
   beaverGuide.classList.toggle('face-left', stop.face === 'left');
 
   lastScrollY = window.scrollY;
