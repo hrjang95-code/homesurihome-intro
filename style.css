@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
 @import url("https://fastly.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
 @font-face {
   font-family: 'BMHANNAPro';
@@ -76,11 +75,12 @@ footer{padding:30px 0;background:#4f3b2c;color:#f8f0e7;font-size:12px}.footer-in
   #works { min-height: auto; padding-top: 160px; padding-bottom: 200px; }
   #works .section-head > p { margin-bottom: 70px; }
   #community { min-height: 110vh; padding-top: 150px; padding-bottom: 150px; }
-  #vision { min-height: 135vh; padding-top: 160px; padding-bottom: 160px; }
+  #vision { min-height: auto; padding-top: 120px; padding-bottom: 120px; }
   .download { min-height: 100vh; padding-top: 150px; padding-bottom: 180px; }
   
   /* Content Downscaling for Desktop (~15-20% reduction) */
   .container, .brand { max-width: 1020px; margin-left: auto; margin-right: auto; }
+  .vision-container { max-width: 1200px; width: min(1200px, calc(100vw - 240px)); }
   .eyebrow { font-size: 10px; }
   .hero-copy h1 { font-size: clamp(28px, 3.1vw, 48px); letter-spacing: -0.04em; }
   .hero-copy .lead { font-size: 14px; }
@@ -103,8 +103,7 @@ footer{padding:30px 0;background:#4f3b2c;color:#f8f0e7;font-size:12px}.footer-in
   .community-art { width: clamp(430px, 42vw, 720px); max-width: none; margin: 0; }
   .works-stage { width: min(92vw, 1100px); max-width: none; margin-left: calc(50% - min(46vw, 550px)); margin-top: -100px; }
   
-  .vision-grid { gap: 16px; }
-  .vision-item { padding: 14px 10px; font-size: 14.5px; }
+  .vision-grid { gap: 20px; }
   
   .qr-wrap { max-width: 350px; padding: 32px 20px; }
   .qr-wrap img { max-width: 260px; }
@@ -152,11 +151,23 @@ footer{padding:30px 0;background:#4f3b2c;color:#f8f0e7;font-size:12px}.footer-in
 .journey-step p { margin: 0; font-size: 14px; color: #7a6252; line-height: 1.5; word-break: keep-all; }
 .journey-end-flag { position: absolute; right: 0; top: 30px; width: 32px; height: 32px; background: #825331; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: translate(50%, -50%); z-index: 2; box-shadow: 0 4px 10px rgba(130,83,49,0.3); }
 .journey-end-flag svg { width: 16px; height: 16px; }
-.vision-grid { display: flex; flex-wrap: nowrap; justify-content: center; gap: 20px; max-width: 1200px; width: max-content; margin: 0 auto; }
-.vision-item { background: rgba(255,255,255,.6); border: 1px solid rgba(111,71,45,.15); color: #6f472d; font-weight: 700; padding: 18px 12px; border-radius: 99px; font-size: 17px; backdrop-filter: blur(8px); box-shadow: 0 12px 30px rgba(70,43,25,.04); text-align: center; word-break: keep-all; white-space: nowrap; display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; }
-#vision .container { transform: translateY(1.5vh); }
-@media (max-width: 1200px) { .vision-grid { flex-wrap: wrap; width: 100%; max-width: 680px; } .vision-item { flex: 1 1 calc(50% - 20px); } }
-@media (max-width: 600px) { .vision-grid { flex-direction: column; flex-wrap: nowrap; } .vision-item { width: 100%; flex: auto; } }
+.vision-container { display: flex; flex-direction: column; align-items: center; max-width: 1240px; margin: 0 auto; position: relative; z-index: 1; }
+.vision-desc { font-family: 'Pretendard', sans-serif; font-size: 16px; line-height: 1.6; color: #7a6252; margin: 0; font-weight: 500; }
+.vision-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; width: 100%; position: relative; z-index: 31; }
+.vision-card { background: rgba(255, 253, 249, 0.75); border: 1px solid rgba(139, 114, 94, 0.15); border-radius: 32px; padding: 34px 28px 36px; min-height: 370px; box-shadow: 0 18px 45px rgba(70, 43, 25, 0.05); display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; backdrop-filter: blur(10px); }
+.card-num { position: absolute; top: 20px; left: 20px; width: 34px; height: 34px; border-radius: 50%; background: #f4eadb; color: #8b725e; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; opacity: 0.8; }
+.card-icon { width: 100px; height: 100px; border-radius: 50%; background: #f7efe4; display: flex; align-items: center; justify-content: center; margin: 18px 0 24px; color: var(--brown); }
+.card-icon svg { width: 50px; height: 50px; stroke-width: 1.25px; }
+.vision-card h3 { font-family: 'Pretendard', sans-serif; font-size: 24px; font-weight: 700; color: var(--ink); line-height: 1.4; margin: 0 0 16px; word-break: keep-all; letter-spacing: -0.01em; }
+.card-divider { display: block; width: 20px; height: 2px; background: rgba(111, 71, 45, 0.25); margin: 0 auto 16px; border-radius: 2px; }
+.vision-card p { font-family: 'Pretendard', sans-serif; font-size: 15px; line-height: 1.75; color: #806e62; margin: 0; word-break: keep-all; }
+.vision-card--last { background: transparent !important; border: none !important; box-shadow: none !important; backdrop-filter: none !important; padding: 0 !important; position: relative; overflow: visible; z-index: 2; }
+.vision-card-content { background: rgba(255, 253, 249, 0.98); border: 1px solid rgba(139, 114, 94, 0.15); border-radius: 32px; padding: 34px 28px 36px; min-height: 370px; box-shadow: 0 18px 45px rgba(70, 43, 25, 0.05); display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; width: 100%; box-sizing: border-box; }
+.vision-beaver { position: absolute; width: 205px; right: -160px; bottom: 45px; z-index: 1; pointer-events: none; opacity: 1; }
+
+@media (max-width: 1100px) { .vision-grid { grid-template-columns: repeat(2, 1fr); } .vision-beaver { width: 175px; right: -145px; bottom: 30px; } }
+@media (max-width: 860px) { .vision-beaver { display: none; } }
+@media (max-width: 600px) { .vision-grid { grid-template-columns: 1fr; } }
 @media (max-width:900px){.container,.brand{width:min(100% - 36px,720px)}.section{min-height:auto;padding:90px 0}.download{padding-bottom:140px}.hero{padding-top:130px}.hero-grid,.split,.community-grid,.download-card{grid-template-columns:1fr;gap:40px}.hero-copy{text-align:center}.hero-visual{min-height:520px}.hero-visual img{height:560px;max-height:70vh}.section-head{display:block}.section-head>p{text-align:left}.copy-block h2,.section-head h2,.download h2{font-size:42px}.community-grid .copy-block{order:0}.download-card{padding:38px}.qr-wrap{justify-self:center}.badges{flex-wrap:wrap}.brandbar{padding:24px 0}}
 @media (max-width:560px){.container,.brand{width:calc(100% - 28px)}.hero-copy h1{font-size:42px}.lead,.copy-block>p,.section-head>p,.download-copy>p{font-size:15px}.hero-visual{min-height:430px}.hero-visual img{height:460px}.section{padding:72px 0}.download{padding-bottom:120px}.copy-block h2,.section-head h2,.download h2{font-size:36px}.micro-flow{gap:5px;flex-wrap:wrap}.section-head{margin-bottom:28px}.wide-card,.works-stage,.community-art{border-radius:24px}.download-card{padding:28px;border-radius:28px}.qr-desc{white-space:normal}.badges span{font-size:11px;padding:10px 12px}.footer-inner{align-items:flex-start;flex-direction:column}.brand strong{font-size:14px}.brand small{font-size:9px}}
 
@@ -173,7 +184,7 @@ footer{padding:30px 0;background:#4f3b2c;color:#f8f0e7;font-size:12px}.footer-in
   z-index:30;
   pointer-events:none;
   transform:translate3d(calc(84vw - 50%), calc(68vh - 50%), 0);
-  transition: transform 0.85s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
+  transition: transform 0.9s cubic-bezier(.22,.61,.36,1), opacity 0.25s ease, visibility 0.25s ease;
   will-change: transform;
 }
 .beaver-guide img{
@@ -198,22 +209,6 @@ footer{padding:30px 0;background:#4f3b2c;color:#f8f0e7;font-size:12px}.footer-in
   z-index:1;
   opacity:.55;
   transition:transform .35s ease,opacity .35s ease;
-}
-.beaver-guide.is-moving img{animation:beaverStep .56s ease-in-out infinite alternate}
-.beaver-guide.is-moving .beaver-shadow{animation:beaverShadow .56s ease-in-out infinite alternate}
-.beaver-guide.face-right img{transform:scaleX(-1)}
-.beaver-guide.face-right.is-moving img{animation:beaverStepRight .56s ease-in-out infinite alternate}
-@keyframes beaverStep{
-  from{transform:translateY(0)}
-  to{transform:translateY(-4px)}
-}
-@keyframes beaverStepRight{
-  from{transform:scaleX(-1) translateY(0)}
-  to{transform:scaleX(-1) translateY(-4px)}
-}
-@keyframes beaverShadow{
-  from{transform:scaleX(1);opacity:.55}
-  to{transform:scaleX(.9);opacity:.35}
 }
 @media (max-width:860px){
   .beaver-guide{display:none !important}

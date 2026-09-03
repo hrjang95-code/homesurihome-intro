@@ -18,20 +18,17 @@ if (topBtn) {
 // BIVER scroll companion — clean floating character, no cards or speech bubbles.
 const beaverGuide = document.querySelector('.beaver-guide');
 const guideStops = [
-  { id:'hero',      x:84, y:68, face:'left'  },
-  { id:'why',       x:12, y:78, face:'right' },
-  { id:'solution',  x:85, y:65, face:'left'  },
-  { id:'ai',        x:8.5, y:59, face:'right' },
-  { id:'works',     x:85, y:62, face:'left'  },
-  { id:'community', x:9.5, y:66, face:'right' },
-  { id:'vision',    x:78, y:51, face:'left', scale: 0.95 },
-  { id:'download',  x:76, y:70, face:'left', scale: 0.95 }
+  { id:'hero',      x:85, y:68, scale: 1 },
+  { id:'why',       x:85, y:68, scale: 1 },
+  { id:'solution',  x:85, y:64, scale: 1 },
+  { id:'ai',        x:84, y:58, scale: 1 },
+  { id:'works',     x:85, y:62, scale: 1 },
+  { id:'community', x:84, y:65, scale: 1 },
+  { id:'vision',    x:85, y:58, scale: 1.05 },
+  { id:'download',  x:78, y:65, scale: 0.95 }
 ].map(stop => ({ ...stop, el:document.getElementById(stop.id) }));
 
 let currentGuide = -1;
-let lastScrollY = window.scrollY;
-let moveTimer;
-let switchTimer;
 
 function nearestGuideStop(){
   const focusY = window.scrollY + window.innerHeight * .54;
@@ -61,47 +58,30 @@ function updateBeaver(){
   if (!beaverGuide || window.innerWidth < 861) return;
 
   const index = nearestGuideStop();
+  
+  if (index === currentGuide) return;
+  currentGuide = index;
+
   const stop = guideStops[index];
   
-  if (stop.id === 'why' || stop.id === 'hero') {
+  if (stop.id === 'why' || stop.id === 'hero' || stop.id === 'vision') {
     beaverGuide.style.opacity = '0';
+    beaverGuide.style.visibility = 'hidden';
     beaverGuide.style.pointerEvents = 'none';
   } else {
     beaverGuide.style.opacity = '1';
+    beaverGuide.style.visibility = 'visible';
     beaverGuide.style.pointerEvents = 'auto';
   }
 
   let xStr = `calc(${stop.x}vw - 50%)`;
   let yStr = `calc(${stop.y}vh - 50%)`;
 
-  if (stop.id === 'download') {
-    const card = document.querySelector('#download .qr-wrap');
-    if (card) {
-      const rect = card.getBoundingClientRect();
-      const bw = beaverGuide.offsetWidth || 200;
-      const bh = beaverGuide.offsetHeight || 200;
-      xStr = `${Math.max(20, rect.left - bw - 20)}px`;
-      yStr = `${rect.bottom - bh}px`;
-      stop.face = 'right';
-    }
-  }
-
   beaverGuide.style.transform = `translate3d(${xStr}, ${yStr}, 0) scale(${stop.scale || 1})`;
-  beaverGuide.classList.toggle('face-right', stop.face === 'right');
-
-  lastScrollY = window.scrollY;
-
-  beaverGuide.classList.add('is-moving');
-  clearTimeout(moveTimer);
-  moveTimer = setTimeout(() => beaverGuide.classList.remove('is-moving'), 200);
-
-  if (index !== currentGuide){
-    currentGuide = index;
-  }
 }
 
 window.addEventListener('scroll', updateBeaver, { passive:true });
-window.addEventListener('resize', updateBeaver);
+window.addEventListener('resize', () => { currentGuide = -1; updateBeaver(); });
 updateBeaver();
 
 // GSAP ScrollTrigger Animations
@@ -408,36 +388,27 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       { opacity: 1, y: 0, scale: 1, scrollTrigger: { trigger: '#community', start: "top 95%", end: "bottom -10%", scrub: 1.5 } }
     );
 
-    // 7. OUR VISION - Sequential Scrub
-    gsap.fromTo('#vision .section-head .eyebrow, #vision .section-head h2',
-      { opacity: 0.45, y: 25 },
-      { opacity: 1, y: 0, stagger: 0.1, scrollTrigger: { trigger: '#vision', start: "top 95%", end: "top 10%", scrub: 1.8 } }
-    );
-    
-    const visionItems = gsap.utils.toArray('#vision .vision-item');
-    if (visionItems.length > 0) {
-      gsap.set(visionItems, { opacity: 0.45, y: 12, scale: 0.98 });
+    // 7. OUR VISION - Staggered Card Reveal
+    const visionCards = gsap.utils.toArray('#vision .vision-card');
+    if (visionCards.length === 4) {
+      // For the first 3, animate the whole card. For the 4th, animate its content to keep the beaver static.
+      const targets = visionCards.map(c => c.querySelector('.vision-card-content') || c);
       
-      let tlVision = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#vision',
-          start: "top 85%", 
-          end: "bottom -30%",
-          scrub: 1.8
+      gsap.fromTo(targets, 
+        { y: 28, opacity: 0.82 },
+        {
+          y: 0,
+          opacity: 1,
+          stagger: 0.14,
+          ease: "none",
+          scrollTrigger: {
+            trigger: '#vision',
+            start: "top 78%",
+            end: "bottom 42%",
+            scrub: 0.6
+          }
         }
-      });
-      
-      visionItems.forEach((item, i) => {
-        let stepStart = i * 1;
-        
-        if (i > 0) {
-          // Dim previous item
-          tlVision.to(visionItems[i-1], { opacity: 0.75, scale: 0.98, duration: 1 }, stepStart);
-        }
-        
-        // Highlight current item
-        tlVision.to(item, { opacity: 1, y: 0, scale: 1, duration: 1 }, stepStart);
-      });
+      );
     }
 
     // 8. DOWNLOAD - Sequential Scrub CTA
