@@ -388,26 +388,35 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       { opacity: 1, y: 0, scale: 1, scrollTrigger: { trigger: '#community', start: "top 95%", end: "bottom -10%", scrub: 1.5 } }
     );
 
-    // 7. OUR VISION - Staggered Card Reveal
-    const visionCards = gsap.utils.toArray('#vision .vision-card');
-    if (visionCards.length === 4) {
-      // For the first 3, animate the whole card. For the 4th, animate its content to keep the beaver static.
-      const targets = visionCards.map(c => c.querySelector('.vision-card-content') || c);
-      
-      gsap.fromTo(targets, 
-        { y: 28, opacity: 0.82 },
-        {
-          y: 0,
-          opacity: 1,
-          stagger: 0.14,
-          ease: "none",
-          scrollTrigger: {
-            trigger: '#vision',
-            start: "top 78%",
-            end: "bottom 42%",
-            scrub: 0.6
-          }
-        }
+    // 7. OUR VISION - Section Depth Parallax
+    let tlVision = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#vision',
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 1,
+        pin: false
+      }
+    });
+
+    tlVision.fromTo('#vision .vision-bg-text',
+      { y: -10 },
+      { y: 25, ease: "none" },
+      0
+    );
+
+    tlVision.fromTo('#vision .section-head',
+      { y: 0 },
+      { y: -15, ease: "none" },
+      0
+    );
+
+    const cardTargets = gsap.utils.toArray('#vision .vision-card:not(.vision-card--last), #vision .vision-card--last .vision-card-content');
+    if (cardTargets.length > 0) {
+      tlVision.fromTo(cardTargets,
+        { y: 20 },
+        { y: -25, ease: "none" },
+        0
       );
     }
 
