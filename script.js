@@ -14,26 +14,18 @@ if (topBtn) {
   topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
-const heroPhone = document.querySelector('.hero-visual img');
-if (heroPhone) {
-  window.addEventListener('scroll', () => {
-    if (window.innerWidth < 768) return;
-    const y = Math.min(window.scrollY * 0.06, 32);
-    heroPhone.style.transform = `translateY(${y}px)`;
-  }, { passive:true });
-}
 
 // BIVER scroll companion — clean floating character, no cards or speech bubbles.
 const beaverGuide = document.querySelector('.beaver-guide');
 const guideStops = [
   { id:'hero',      x:84, y:68, face:'left'  },
   { id:'why',       x:12, y:78, face:'right' },
-  { id:'solution',  x:86, y:78, face:'left'  },
-  { id:'ai',        x:9,  y:58, face:'right', scale: 0.88 },
-  { id:'works',     x:86, y:72, face:'left'  },
-  { id:'community', x:19, y:83, face:'right', scale: 0.82 },
-  { id:'vision',    x:82, y:76, face:'left'  },
-  { id:'download',  x:76, y:70, face:'left'  }
+  { id:'solution',  x:85, y:65, face:'left'  },
+  { id:'ai',        x:8.5, y:59, face:'right' },
+  { id:'works',     x:85, y:62, face:'left'  },
+  { id:'community', x:9.5, y:66, face:'right' },
+  { id:'vision',    x:78, y:51, face:'left', scale: 0.95 },
+  { id:'download',  x:76, y:70, face:'left', scale: 0.95 }
 ].map(stop => ({ ...stop, el:document.getElementById(stop.id) }));
 
 let currentGuide = -1;
@@ -47,7 +39,15 @@ function nearestGuideStop(){
   let bestDistance = Infinity;
   guideStops.forEach((stop,index) => {
     if (!stop.el) return;
-    const center = stop.el.offsetTop + stop.el.offsetHeight / 2;
+    
+    let elTop = stop.el.offsetTop;
+    let elHeight = stop.el.offsetHeight;
+    if (stop.el.parentElement && stop.el.parentElement.classList.contains('pin-spacer')) {
+        elTop = stop.el.parentElement.offsetTop;
+        elHeight = stop.el.parentElement.offsetHeight;
+    }
+    
+    const center = elTop + elHeight / 2;
     const distance = Math.abs(center - focusY);
     if (distance < bestDistance){
       bestDistance = distance;
@@ -63,19 +63,18 @@ function updateBeaver(){
   const index = nearestGuideStop();
   const stop = guideStops[index];
   
+  if (stop.id === 'why' || stop.id === 'hero') {
+    beaverGuide.style.opacity = '0';
+    beaverGuide.style.pointerEvents = 'none';
+  } else {
+    beaverGuide.style.opacity = '1';
+    beaverGuide.style.pointerEvents = 'auto';
+  }
+
   let xStr = `calc(${stop.x}vw - 50%)`;
   let yStr = `calc(${stop.y}vh - 50%)`;
 
-  if (stop.id === 'vision') {
-    const grid = document.querySelector('#vision .vision-grid');
-    if (grid) {
-      const rect = grid.getBoundingClientRect();
-      const bw = beaverGuide.offsetWidth || 200;
-      const bh = beaverGuide.offsetHeight || 200;
-      xStr = `${Math.min(rect.right + 30, window.innerWidth - bw)}px`;
-      yStr = `${rect.top + rect.height / 2 - bh / 2}px`;
-    }
-  } else if (stop.id === 'download') {
+  if (stop.id === 'download') {
     const card = document.querySelector('#download .qr-wrap');
     if (card) {
       const rect = card.getBoundingClientRect();
@@ -88,7 +87,7 @@ function updateBeaver(){
   }
 
   beaverGuide.style.transform = `translate3d(${xStr}, ${yStr}, 0) scale(${stop.scale || 1})`;
-  beaverGuide.classList.toggle('face-left', stop.face === 'left');
+  beaverGuide.classList.toggle('face-right', stop.face === 'right');
 
   lastScrollY = window.scrollY;
 
@@ -104,3 +103,396 @@ function updateBeaver(){
 window.addEventListener('scroll', updateBeaver, { passive:true });
 window.addEventListener('resize', updateBeaver);
 updateBeaver();
+
+// GSAP ScrollTrigger Animations
+if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+
+  let mm = gsap.matchMedia();
+
+  // Desktop Animations
+  mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1024px)", () => {
+    // 1. HERO - Scrub
+    const heroPhone = document.querySelector('.hero-visual img');
+    const heroCopy = document.querySelector('.hero-copy');
+    const scrollHint = document.querySelector('.scroll-hint');
+    const scrollHintLine = document.querySelector('.scroll-hint i');
+
+    if (scrollHintLine) {
+      gsap.fromTo(scrollHintLine, 
+        { y: 0, opacity: 1 }, 
+        { y: 10, opacity: 0.1, duration: 1.5, ease: "power1.inOut", repeat: -1 }
+      );
+    }
+    if (scrollHint) {
+      gsap.to(scrollHint, {
+        opacity: 0,
+        scrollTrigger: { trigger: '.hero', start: "top top", end: "top -30%", scrub: true }
+      });
+    }
+
+    if (heroPhone && heroCopy) {
+      gsap.to(heroCopy, {
+        y: -30, opacity: 0.75, ease: "none",
+        scrollTrigger: { trigger: '.hero', start: "top top", end: "bottom -100%", scrub: 1.5 }
+      });
+      gsap.to(heroPhone, {
+        y: -45, scale: 1.04, ease: "none",
+        scrollTrigger: { trigger: '.hero', start: "top top", end: "bottom -100%", scrub: 1.5 }
+      });
+    }
+
+    // 2. WHY HOME SURI HOME - Scroll Flow Pin & Scrub Interaction
+    const whySection = document.querySelector('#why');
+    const whyItems = gsap.utils.toArray('.why-character-item');
+    
+    if (whySection && whyItems.length === 3) {
+      const item1 = whyItems[0];
+      const item2 = whyItems[1];
+      const item3 = whyItems[2];
+      
+      const setInitialState = (item, o, s, y) => {
+        const bg = item.querySelector('.char-img');
+        const img = item.querySelector('.char-img img');
+        const num = item.querySelector('.char-num');
+        gsap.set(item, { opacity: o });
+        gsap.set(img, { scale: s, y: y });
+        if (o === 1) { 
+          gsap.set(bg, { backgroundColor: "rgba(166, 134, 99, 0.12)" });
+          gsap.set(num, { scale: 1.08 });
+        } else {
+          gsap.set(bg, { backgroundColor: "rgba(166, 134, 99, 0.05)" });
+          gsap.set(num, { scale: 1 });
+        }
+      };
+
+      // Set initial state
+      setInitialState(item1, 1, 1.04, -6);
+      setInitialState(item2, 0.1, 0.92, 24);
+      setInitialState(item3, 0.05, 0.9, 30);
+      
+      const tlWhy = gsap.timeline({
+        scrollTrigger: {
+          trigger: whySection,
+          start: "top 5%",
+          end: "+=1400",
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.6,
+          anticipatePin: 1,
+          invalidateOnRefresh: true
+        }
+      });
+      
+      const animateToActive = (item) => {
+        const bg = item.querySelector('.char-img');
+        const img = item.querySelector('.char-img img');
+        const num = item.querySelector('.char-num');
+        return [
+          gsap.to(item, { opacity: 1, duration: 0.2, ease: "none", immediateRender: false }),
+          gsap.to(img, { scale: 1.04, y: -6, duration: 0.2, ease: "none", immediateRender: false }),
+          gsap.to(bg, { backgroundColor: "rgba(166, 134, 99, 0.12)", duration: 0.2, ease: "none", immediateRender: false }),
+          gsap.to(num, { scale: 1.08, duration: 0.2, ease: "none", immediateRender: false })
+        ];
+      };
+      
+      const animateToPast = (item) => {
+        const bg = item.querySelector('.char-img');
+        const img = item.querySelector('.char-img img');
+        const num = item.querySelector('.char-num');
+        return [
+          gsap.to(item, { opacity: 0.12, duration: 0.2, ease: "none", immediateRender: false }),
+          gsap.to(img, { scale: 0.94, y: -20, duration: 0.2, ease: "none", immediateRender: false }),
+          gsap.to(bg, { backgroundColor: "rgba(166, 134, 99, 0.05)", duration: 0.2, ease: "none", immediateRender: false }),
+          gsap.to(num, { scale: 1, duration: 0.2, ease: "none", immediateRender: false })
+        ];
+      };
+      
+      // 0~20%: Hold Step 1
+      tlWhy.addLabel("start");
+      tlWhy.to({}, { duration: 0.2 }, "start"); 
+      
+      // 20~40%: Transition 1 -> 2
+      tlWhy.addLabel("trans1");
+      animateToPast(item1).forEach(t => tlWhy.add(t, "trans1"));
+      animateToActive(item2).forEach(t => tlWhy.add(t, "trans1"));
+      
+      // 40~55%: Hold Step 2
+      tlWhy.addLabel("hold2");
+      tlWhy.to({}, { duration: 0.15 }, "hold2");
+      
+      // 55~75%: Transition 2 -> 3
+      tlWhy.addLabel("trans2");
+      animateToPast(item2).forEach(t => tlWhy.add(t, "trans2"));
+      animateToActive(item3).forEach(t => tlWhy.add(t, "trans2"));
+      
+      // 75~100%: Hold Step 3
+      tlWhy.addLabel("hold3");
+      tlWhy.to({}, { duration: 0.25 }, "hold3");
+    }
+
+    // 3. OUR SOLUTION - Scroll Flow Scrubbing Interaction
+    const solutionSteps = gsap.utils.toArray('#solution .journey-step');
+    const allWrappers = gsap.utils.toArray('#solution .journey-step-wrapper');
+    const pathLine = document.querySelector('.journey-path-svg path');
+    const svg = document.querySelector('.journey-path-svg');
+
+    if (solutionSteps.length > 0) {
+      let highlightPath;
+      let activePoint;
+      let pathLength = 0;
+      let progressProxy = { val: 0 };
+      
+      if (pathLine && svg) {
+        pathLength = pathLine.getTotalLength();
+        
+        highlightPath = pathLine.cloneNode();
+        highlightPath.setAttribute('stroke', '#825331'); 
+        highlightPath.setAttribute('stroke-width', '3');
+        highlightPath.style.strokeDasharray = pathLength;
+        highlightPath.style.strokeDashoffset = pathLength; // Hidden at start
+        svg.appendChild(highlightPath);
+        
+        activePoint = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        activePoint.setAttribute("r", "5");
+        activePoint.setAttribute("fill", "#6f472d");
+        
+        let startPt = pathLine.getPointAtLength(0);
+        activePoint.setAttribute("cx", startPt.x);
+        activePoint.setAttribute("cy", startPt.y);
+        activePoint.style.opacity = 0; // Hidden at start
+        svg.appendChild(activePoint);
+      }
+      
+      let targetLengths = [];
+      if (pathLine) {
+        for (let i = 0; i < 5; i++) {
+          let targetX = 100 + (i * 200); 
+          let closestLength = 0;
+          let minDiff = Infinity;
+          for(let l = 0; l <= pathLength; l += 2) {
+            let pt = pathLine.getPointAtLength(l);
+            if(Math.abs(pt.x - targetX) < minDiff) {
+              minDiff = Math.abs(pt.x - targetX);
+              closestLength = l;
+            }
+          }
+          targetLengths.push(closestLength);
+        }
+      }
+
+      let tlIntro = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#solution',
+          start: "top 75%",
+          end: "top top",
+          scrub: 1
+        }
+      });
+
+      let tlSolution = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#solution',
+          start: "top top",
+          end: "+=1800",
+          pin: true,
+          scrub: 1
+        }
+      });
+
+      // Animate line drawing and dot moving globally in tlSolution
+      if (highlightPath && activePoint && pathLength > 0) {
+        tlSolution.fromTo(progressProxy, { val: 0 }, {
+          val: pathLength,
+          duration: 1,
+          ease: "none",
+          onUpdate: () => {
+            highlightPath.style.strokeDashoffset = pathLength - progressProxy.val;
+            let pt = pathLine.getPointAtLength(progressProxy.val);
+            activePoint.setAttribute("cx", pt.x);
+            activePoint.setAttribute("cy", pt.y);
+          }
+        }, 0);
+      }
+
+      let t = targetLengths.map(l => pathLength > 0 ? l / pathLength : 0);
+      t[0] = 0;
+      t[4] = 1;
+
+      solutionSteps.forEach((step, i) => {
+        const w = allWrappers[i];
+        const icon = step.querySelector('.step-icon');
+        const num = step.querySelector('.step-num');
+        const h4 = step.querySelector('h4');
+        const p = step.querySelector('p');
+        
+        step.style.cursor = 'default';
+
+        // Initial Layout Reset: All steps in WAITING state initially
+        gsap.set(step, { clearProps: "transform,rotateX,rotateY" });
+        gsap.set([icon, num, h4, p], { clearProps: "transform" });
+
+        gsap.set(w, { opacity: 0.35 });
+        gsap.set(icon, { y: 0, scale: 1, borderColor: "#ead8c3", backgroundColor: "#fffdf9" });
+        gsap.set(num, { color: "#a48671" });
+        gsap.set(h4, { y: 0, opacity: 0.4, color: "#4f3b2c" });
+        gsap.set(p, { y: 0, opacity: 0.4 });
+
+        if (i === 0) {
+          // Intro Trigger animates 01 to ACTIVE
+          tlIntro.fromTo(w, { opacity: 0.35 }, { opacity: 1, ease: "none" }, 0);
+          tlIntro.fromTo(icon, { y: 0, scale: 1, borderColor: "#ead8c3", backgroundColor: "#fffdf9" }, { y: -8, scale: 1.10, borderColor: "#6f472d", backgroundColor: "#f6eee4", ease: "none" }, 0);
+          tlIntro.fromTo(num, { color: "#a48671" }, { color: "#6f472d", ease: "none" }, 0);
+          tlIntro.fromTo(h4, { y: 0, opacity: 0.4, color: "#4f3b2c" }, { y: -3, opacity: 1, color: "#5c4535", ease: "none" }, 0);
+          tlIntro.fromTo(p, { y: 0, opacity: 0.4 }, { y: -3, opacity: 1, ease: "none" }, 0);
+          if (activePoint) {
+            tlIntro.fromTo(activePoint, { opacity: 0 }, { opacity: 1, ease: "none" }, 0);
+          }
+        }
+
+        // Deactivate logic (Active -> Completed)
+        if (i < 4) {
+          const startT = t[i];
+          const endT = t[i+1];
+          const dur = endT - startT;
+
+          tlSolution.fromTo(icon, { y: -8, scale: 1.10, borderColor: "#6f472d", backgroundColor: "#f6eee4" }, { y: 0, scale: 1, borderColor: "#a48671", backgroundColor: "#f9f3ec", duration: dur, ease: "none" }, startT);
+          tlSolution.fromTo(num, { color: "#6f472d" }, { color: "#a48671", duration: dur, ease: "none" }, startT);
+          tlSolution.fromTo(h4, { y: -3, opacity: 1, color: "#5c4535" }, { y: 0, color: "#4f3b2c", duration: dur, ease: "none" }, startT);
+          tlSolution.fromTo(p, { y: -3, opacity: 1 }, { y: 0, duration: dur, ease: "none" }, startT);
+          tlSolution.fromTo(w, { opacity: 1 }, { opacity: 1, duration: dur, ease: "none" }, startT);
+        }
+
+        // Activate logic (Waiting -> Active)
+        if (i > 0) {
+          const startT = t[i-1];
+          const endT = t[i];
+          const dur = endT - startT;
+
+          tlSolution.fromTo(icon, { y: 0, scale: 1, borderColor: "#ead8c3", backgroundColor: "#fffdf9" }, { y: -8, scale: 1.10, borderColor: "#6f472d", backgroundColor: "#f6eee4", duration: dur, ease: "none" }, startT);
+          tlSolution.fromTo(num, { color: "#a48671" }, { color: "#6f472d", duration: dur, ease: "none" }, startT);
+          tlSolution.fromTo(h4, { y: 0, opacity: 0.4, color: "#4f3b2c" }, { y: -3, opacity: 1, color: "#5c4535", duration: dur, ease: "none" }, startT);
+          tlSolution.fromTo(p, { y: 0, opacity: 0.4 }, { y: -3, opacity: 1, duration: dur, ease: "none" }, startT);
+          tlSolution.fromTo(w, { opacity: 0.35 }, { opacity: 1, duration: dur, ease: "none" }, startT);
+        }
+      });
+    }
+
+    // 4. AI REPAIR - Parallax Scrub
+    gsap.fromTo('#ai .copy-block', 
+      { opacity: 0.3, y: 40 },
+      { opacity: 1, y: 0, scrollTrigger: { trigger: '#ai', start: "top 95%", end: "bottom 10%", scrub: 1.5 } }
+    );
+    gsap.fromTo('#ai .feature-art', 
+      { opacity: 0.4, y: 60, scale: 0.88 },
+      { opacity: 1, y: 0, scale: 1, scrollTrigger: { trigger: '#ai', start: "top 95%", end: "bottom -10%", scrub: 1.5 } }
+    );
+
+    // 5. HOW IT WORKS - Simple Scrub Parallax
+    gsap.fromTo('#works .section-head .num, #works .section-head .eyebrow, #works .section-head h2, #works .section-head p',
+      { opacity: 0.3, y: 30 },
+      { opacity: 1, y: 0, stagger: 0.1, scrollTrigger: { trigger: '#works', start: "top 95%", end: "bottom 20%", scrub: 1.5 } }
+    );
+    gsap.fromTo('#works .works-stage',
+      { opacity: 0.55, y: 80, scale: 0.94 },
+      { opacity: 1, y: 0, scale: 1, scrollTrigger: { trigger: '#works', start: "top 95%", end: "bottom -10%", scrub: 1.5 } }
+    );
+
+    // 6. COMMUNITY - Parallax & Fade
+    gsap.fromTo('#community .copy-block .num, #community .copy-block .eyebrow, #community .copy-block h2, #community .copy-block p', 
+      { opacity: 0.4, y: 35 },
+      { opacity: 1, y: 0, stagger: 0.1, scrollTrigger: { trigger: '#community', start: "top 95%", end: "bottom 20%", scrub: 1.5 } }
+    );
+    gsap.fromTo('#community .community-art', 
+      { opacity: 0.55, y: 70, scale: 0.95 },
+      { opacity: 1, y: 0, scale: 1, scrollTrigger: { trigger: '#community', start: "top 95%", end: "bottom -10%", scrub: 1.5 } }
+    );
+
+    // 7. OUR VISION - Sequential Scrub
+    gsap.fromTo('#vision .section-head .eyebrow, #vision .section-head h2',
+      { opacity: 0.45, y: 25 },
+      { opacity: 1, y: 0, stagger: 0.1, scrollTrigger: { trigger: '#vision', start: "top 95%", end: "top 10%", scrub: 1.8 } }
+    );
+    
+    const visionItems = gsap.utils.toArray('#vision .vision-item');
+    if (visionItems.length > 0) {
+      gsap.set(visionItems, { opacity: 0.45, y: 12, scale: 0.98 });
+      
+      let tlVision = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#vision',
+          start: "top 85%", 
+          end: "bottom -30%",
+          scrub: 1.8
+        }
+      });
+      
+      visionItems.forEach((item, i) => {
+        let stepStart = i * 1;
+        
+        if (i > 0) {
+          // Dim previous item
+          tlVision.to(visionItems[i-1], { opacity: 0.75, scale: 0.98, duration: 1 }, stepStart);
+        }
+        
+        // Highlight current item
+        tlVision.to(item, { opacity: 1, y: 0, scale: 1, duration: 1 }, stepStart);
+      });
+    }
+
+    // 8. DOWNLOAD - Sequential Scrub CTA
+    let tlDownload = gsap.timeline({
+      scrollTrigger: { 
+        trigger: '#download', 
+        start: "top 95%", 
+        end: "bottom 60%", 
+        scrub: 1.5 
+      }
+    });
+    
+    tlDownload.fromTo('#download .download-copy', 
+      { opacity: 0.35, y: 35 },
+      { opacity: 1, y: 0, duration: 1 }
+    )
+    .fromTo('#download .qr-label, #download .qr-desc', 
+      { opacity: 0.4, y: 15 },
+      { opacity: 1, y: 0, duration: 1 },
+      "-=0.6"
+    )
+    .fromTo('#download .qr-wrap img', 
+      { opacity: 0.45, y: 30, scale: 0.94 },
+      { opacity: 1, y: 0, scale: 1, duration: 1 },
+      "-=0.6"
+    )
+    .fromTo('footer', 
+      { opacity: 0.6 },
+      { opacity: 1, duration: 0.5 },
+      "-=0.5"
+    );
+  });
+
+  // Mobile / Reduced Motion Fallback
+  mm.add("(prefers-reduced-motion: reduce), (max-width: 1023px)", () => {
+    const animateSection = (sectionId, textSelectors) => {
+      const section = document.querySelector(sectionId);
+      if (!section) return;
+      const elements = section.querySelectorAll(textSelectors);
+      if (elements.length > 0) {
+        gsap.from(elements, {
+          scrollTrigger: { trigger: section, start: "top 85%", once: true },
+          opacity: 0, y: 25, duration: 0.6, stagger: 0.1, ease: "power2.out"
+        });
+      }
+    };
+    
+    animateSection('#why', '.section-head .eyebrow, .section-head h2, .section-head p, .why-character-item');
+    animateSection('#solution', '.section-head .eyebrow, .section-head h2, .section-head p, .journey-step-wrapper');
+    animateSection('#ai', '.copy-block .num, .copy-block .eyebrow, .copy-block h2, .copy-block p, .feature-art');
+    
+    animateSection('#works', '.section-head .num, .section-head .eyebrow, .section-head h2, .section-head p, .works-stage');
+    
+    animateSection('#community', '.copy-block .num, .copy-block .eyebrow, .copy-block h2, .copy-block p, .community-art');
+    animateSection('#vision', '.section-head .eyebrow, .section-head h2, .vision-item');
+    animateSection('#download', '.download-copy .eyebrow, .download-copy h2, .download-copy p, .qr-wrap');
+  });
+}
