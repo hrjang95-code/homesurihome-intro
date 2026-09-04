@@ -56,8 +56,7 @@ h1 em,h2 em{font-style:normal;color:var(--brown2)}
 .works-stage { border-radius: 42px; overflow: hidden; background: #f0e6da; box-shadow: var(--shadow); }
 .works-stage img { display: block; width: 100%; height: auto; object-fit: contain; backface-visibility: hidden; transform: translateZ(0); }
 
-.community-grid{grid-template-columns: 0.95fr 1.35fr; gap: 40px; max-width: 1150px; margin: 0 auto;}.community-art{border-radius:38px;overflow:hidden;box-shadow:var(--shadow); margin-left:-20px;}
-#community .copy-block { margin-left: 30px; }
+.community-grid{grid-template-columns: 530px 1fr; gap: 40px; max-width: 1150px; margin: 0 auto; transform: translateX(-75px);}.community-art{border-radius:38px;overflow:hidden;box-shadow:var(--shadow)}
 #community .copy-block .eyebrow {margin-top: 8px;}
 #community .copy-block h2 {margin: 16px 0 20px; word-break: keep-all; overflow-wrap: normal;}
 .download{min-height:88vh;padding:120px 0 160px;overflow:hidden;background:linear-gradient(180deg,#fffaf3,#f4eadb)}
@@ -114,6 +113,7 @@ h1 em,h2 em{font-style:normal;color:var(--brown2)}
 .mascot-9 { position: relative; width: 200px; margin: 0; align-self: flex-end; z-index: 1; opacity: 1; }
 .mascot-9 img { width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 10px rgba(70,43,25,.08)); }
 .doodle-9 { position: absolute; top: -40px; left: 30px; transform: rotate(-5deg); white-space: nowrap; }
+#download .mascot-7, #download .mascot-7 img { filter: none !important; }
 .landscape{position:absolute;left:0;right:0;bottom:-20px;height:210px;opacity:.6;pointer-events:none;z-index:1}.hill{position:absolute;bottom:-100px;width:55%;height:250px;border-radius:50%;background:#dfe1c4}.h1{left:-8%;transform:rotate(7deg)}.h2{right:-12%;background:#e7d8bd;transform:rotate(-7deg)}.tree{position:absolute;bottom:65px;color:#809067;font-size:95px}.t1{left:8%}.t2{left:18%;font-size:74px}
 #download .landscape .landscape-house { position: absolute; right: 12%; bottom: 82px; width: 42px; height: 42px; display: block; color: #9A623C; transform: none; transform-origin: center; overflow: visible; font-size: initial; max-width: none; }
 footer{padding:30px 0;background:#4f3b2c;color:#f8f0e7;font-size:12px}.footer-inner{display:flex;justify-content:space-between;gap:20px;align-items:center}
@@ -369,4 +369,14 @@ footer{padding:30px 0;background:#4f3b2c;color:#f8f0e7;font-size:12px}.footer-in
     display: none !important;
   }
 }
+
+/* Download Section Font Unification */
+#download h2, #download .download-copy h2 { font-family: var(--font-en), 'Pretendard', sans-serif; font-weight: 800; }
+#download .qr-label { font-family: var(--font-en), 'Pretendard', sans-serif; font-weight: 700; }
+#download .download-copy > p:not(.eyebrow) { font-family: 'Pretendard', sans-serif; font-weight: 500; }
+#download .qr-desc { font-family: 'Pretendard', sans-serif; font-weight: 500; }
+.handwritten-doodle { font-family: 'Pretendard', sans-serif; color: #8a6e5b; font-size: 15px; font-weight: 500; letter-spacing: 0.02em; }
+
+/* AI Section Mockup Scale */
+#ai .feature-art img { transform: scale(1.1); transform-origin: center; }
 
