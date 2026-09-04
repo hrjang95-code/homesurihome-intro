@@ -524,7 +524,6 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
 
     gsap.set('#download .house-draw-overlay', { opacity: 1 });
     gsap.set('#download .house-draw-path', { strokeDasharray: 2000, strokeDashoffset: 2000 });
-    gsap.set('#download .bottom-house-path', { strokeDasharray: 100, strokeDashoffset: 100 });
 
     gsap.set('#download .download-house-bg', { opacity: 0, scale: 0.97 });
     gsap.set('#download .qr-label', { opacity: 0, y: 8 });
@@ -542,25 +541,21 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
     });
 
     tlDownload
-      .to('#download .download-copy > *', { opacity: 1, y: 0, duration: 0.55, ease: "power3.out", stagger: 0.1 })
-      .to('#download .doodle-7', { opacity: 1, y: 0, duration: 0.3 }, "-=0.2")
-      .to('#download .mascot-7 img', { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.4)" }, "<")
-      .to('#download .mascot-7 img', { opacity: 0.78, scale: 0.97, duration: 0.4 }, "+=0.2")
-      .to('#download .doodle-8', { opacity: 1, y: 0, duration: 0.3 }, "<")
-      .to('#download .mascot-8 img', { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(1.35)" }, "<0.1")
-      .to('#download .house-draw-path', { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, "-=0.1")
-      .to('#download .download-house-bg', { opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" }, "-=0.3")
-      .to('#download .house-draw-overlay', { opacity: 0, duration: 0.3 }, "<")
-      .to('#download .sparkle', { opacity: 1, scale: 1, duration: 0.25, stagger: 0.08 }, "-=0.2")
-      .to('#download .sparkle', { opacity: 0, scale: 0.7, duration: 0.25, stagger: 0.08 }, "+=0.1")
-      .to('#download .qr-label', { opacity: 1, y: 0, duration: 0.3 }, "-=0.4")
-      .to('#download .qr-code-img', { opacity: 1, duration: 0.45, ease: "power2.out" }, "-=0.1")
-      .to('#download .qr-desc', { opacity: 1, y: 0, duration: 0.3 }, "-=0.1")
-      .to('#download .doodle-9', { opacity: 1, y: 0, duration: 0.3 }, "-=0.1")
-      .to('#download .mascot-9 img', { opacity: 1, x: 0, scale: 1, duration: 0.55, ease: "power3.out" }, "<0.05")
-      .to('#download .mascot-9 img', { y: -4, duration: 0.2, yoyo: true, repeat: 1, ease: "power1.inOut" }, "+=0.1")
-      .to('#download .bottom-house-path', { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, "-=0.2")
-      .to('#download .landscape .house', { scale: 1.12, duration: 0.15, yoyo: true, repeat: 1 }, "+=0.05");
+      .to('#download .download-copy > *', { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", stagger: 0.08 })
+      .to('#download .doodle-7', { opacity: 1, y: 0, duration: 0.25 }, "-=0.15")
+      .to('#download .mascot-7 img', { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.4)" }, "<")
+      .to('#download .mascot-7 img', { opacity: 0.78, scale: 0.97, duration: 0.3 }, "+=0.1")
+      .to('#download .doodle-8', { opacity: 1, y: 0, duration: 0.25 }, "<")
+      .to('#download .mascot-8 img', { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.35)" }, "<0.05")
+      .to('#download .house-draw-path', { strokeDashoffset: 0, duration: 0.65, ease: "power2.inOut" }, "-=0.05")
+      .to('#download .download-house-bg', { opacity: 1, scale: 1, duration: 0.35, ease: "power2.out" }, "-=0.2")
+      .to('#download .house-draw-overlay', { opacity: 0, duration: 0.2 }, "<")
+      .to('#download .qr-label', { opacity: 1, y: 0, duration: 0.25 }, "-=0.2")
+      .to('#download .qr-code-img', { opacity: 1, duration: 0.3, ease: "power2.out" }, "-=0.05")
+      .to('#download .qr-desc', { opacity: 1, y: 0, duration: 0.25 }, "-=0.05")
+      .to('#download .doodle-9', { opacity: 1, y: 0, duration: 0.25 }, "-=0.05")
+      .to('#download .mascot-9 img', { opacity: 1, x: 0, scale: 1, duration: 0.4, ease: "power3.out" }, "<0.05")
+      .to('#download .mascot-9 img', { y: -4, duration: 0.15, yoyo: true, repeat: 1, ease: "power1.inOut" }, "+=0.05");
   });
 
   // Mobile / Reduced Motion Fallback
