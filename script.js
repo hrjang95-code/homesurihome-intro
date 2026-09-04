@@ -14,6 +14,87 @@ if (topBtn) {
   topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
+// Section Capsule Indicator Logic
+const capsuleNav = document.querySelector('.section-capsule-indicator');
+if (capsuleNav) {
+  const sectionsToObserve = Array.from(document.querySelectorAll('main .section'));
+  
+  capsuleNav.innerHTML = '';
+  const capsuleBtns = sectionsToObserve.map((sec, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'capsule-btn';
+    btn.setAttribute('aria-label', `Section ${i + 1}`);
+    
+    const shape = document.createElement('span');
+    shape.className = 'capsule-shape';
+    
+    const num = document.createElement('span');
+    num.className = 'capsule-num';
+    num.textContent = (i + 1).toString().padStart(2, '0');
+    
+    btn.appendChild(shape);
+    btn.appendChild(num);
+    capsuleNav.appendChild(btn);
+    
+    btn.addEventListener('click', () => {
+      let targetElement = sec;
+      if (sec.parentElement && sec.parentElement.classList.contains('pin-spacer')) {
+         targetElement = sec.parentElement;
+      }
+      let elTop = targetElement.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: elTop, behavior: 'smooth' });
+    });
+    
+    return btn;
+  });
+  
+  let currentActiveIndex = -1;
+  
+  function updateCapsuleIndicator() {
+    if (window.innerWidth <= 900) return;
+    
+    let closestIndex = 0;
+    let minDistance = Infinity;
+    const focusY = window.innerHeight / 2;
+    
+    sectionsToObserve.forEach((sec, index) => {
+      if (!sec) return;
+      let rect = sec.getBoundingClientRect();
+      const center = rect.top + rect.height / 2;
+      const distance = Math.abs(center - focusY);
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = index;
+      }
+    });
+    
+    if (closestIndex !== currentActiveIndex) {
+      currentActiveIndex = closestIndex;
+      
+      capsuleBtns.forEach((btn, index) => {
+        btn.classList.remove('active', 'past');
+        
+        if (index < closestIndex) {
+          btn.classList.add('past');
+        } else if (index === closestIndex) {
+          btn.classList.add('active');
+        }
+      });
+    }
+  }
+  
+  window.addEventListener('scroll', () => {
+    requestAnimationFrame(updateCapsuleIndicator);
+  });
+  window.addEventListener('resize', () => {
+    requestAnimationFrame(updateCapsuleIndicator);
+  });
+  
+  updateCapsuleIndicator();
+}
+
 
 // BIVER scroll companion — clean floating character, no cards or speech bubbles.
 const beaverGuide = document.querySelector('.beaver-guide');
@@ -21,11 +102,11 @@ const guideStops = [
   { id:'hero',      x:85, y:68, scale: 1 },
   { id:'why',       x:85, y:68, scale: 1 },
   { id:'solution',  x:85, y:64, scale: 1 },
-  { id:'ai',        x:84, y:58, scale: 1 },
-  { id:'works',     x:85, y:62, scale: 1 },
-  { id:'community', x:84, y:65, scale: 1 },
-  { id:'vision',    x:85, y:58, scale: 1.05 },
-  { id:'download',  x:78, y:65, scale: 0.95 }
+  { id:'ai',        x:45, y:60, scale: 1, flip: true },
+  { id:'works',     x:85, y:65, scale: 1 },
+  { id:'community', x:87, y:72, scale: 1 },
+  { id:'vision',    x:85, y:70, scale: 1 },
+  { id:'download',  x:85, y:60, scale: 1 }
 ].map(stop => ({ ...stop, el:document.getElementById(stop.id) }));
 
 let currentGuide = -1;
@@ -44,7 +125,12 @@ function nearestGuideStop(){
         elHeight = stop.el.parentElement.offsetHeight;
     }
     
-    const center = elTop + elHeight / 2;
+    let center = elTop + elHeight / 2;
+    // Delay transition from #solution to #ai until 90-95% of the pinned section
+    if (stop.id === 'solution') {
+      center = elTop + elHeight * 0.85;
+    }
+    
     const distance = Math.abs(center - focusY);
     if (distance < bestDistance){
       bestDistance = distance;
@@ -64,7 +150,7 @@ function updateBeaver(){
 
   const stop = guideStops[index];
   
-  if (stop.id === 'why' || stop.id === 'hero' || stop.id === 'vision') {
+  if (stop.id === 'why' || stop.id === 'hero' || stop.id === 'vision' || stop.id === 'download') {
     beaverGuide.style.opacity = '0';
     beaverGuide.style.visibility = 'hidden';
     beaverGuide.style.pointerEvents = 'none';
@@ -77,7 +163,8 @@ function updateBeaver(){
   let xStr = `calc(${stop.x}vw - 50%)`;
   let yStr = `calc(${stop.y}vh - 50%)`;
 
-  beaverGuide.style.transform = `translate3d(${xStr}, ${yStr}, 0) scale(${stop.scale || 1})`;
+  let flipScale = stop.flip ? -1 : 1;
+  beaverGuide.style.transform = `translate3d(${xStr}, ${yStr}, 0) scaleX(${flipScale}) scale(${stop.scale || 1})`;
 }
 
 window.addEventListener('scroll', updateBeaver, { passive:true });
@@ -364,8 +451,8 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       { opacity: 1, y: 0, scrollTrigger: { trigger: '#ai', start: "top 95%", end: "bottom 10%", scrub: 1.5 } }
     );
     gsap.fromTo('#ai .feature-art', 
-      { opacity: 0.4, y: 60, scale: 0.88 },
-      { opacity: 1, y: 0, scale: 1, scrollTrigger: { trigger: '#ai', start: "top 95%", end: "bottom -10%", scrub: 1.5 } }
+      { opacity: 0.4, y: 60 },
+      { opacity: 1, y: 0, scrollTrigger: { trigger: '#ai', start: "top 95%", end: "bottom -10%", scrub: 1.5 } }
     );
 
     // 5. HOW IT WORKS - Simple Scrub Parallax
@@ -420,35 +507,52 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       );
     }
 
-    // 8. DOWNLOAD - Sequential Scrub CTA
+    // 8. DOWNLOAD - Ending Sequence
+    gsap.set('#download .download-copy > *', { opacity: 0, y: 20 });
+    gsap.set('#download .mascot-7 img', { opacity: 0, y: 16, scale: 0.92 });
+    gsap.set('#download .doodle-7', { opacity: 0, y: 6 });
+    gsap.set('#download .mascot-8 img', { opacity: 0, y: 24, scale: 0.9 });
+    gsap.set('#download .doodle-8', { opacity: 0, y: 8 });
+    
+    gsap.set('#download .house-draw-overlay', { opacity: 1 });
+    gsap.set('#download .house-draw-path', { strokeDasharray: 2000, strokeDashoffset: 2000 });
+    gsap.set('#download .bottom-house-path', { strokeDasharray: 100, strokeDashoffset: 100 });
+    
+    gsap.set('#download .download-house-bg', { opacity: 0, scale: 0.97 });
+    gsap.set('#download .qr-label', { opacity: 0, y: 8 });
+    gsap.set('#download .qr-code-img', { opacity: 0, scale: 0.94 });
+    gsap.set('#download .qr-desc', { opacity: 0, y: 8 });
+    gsap.set('#download .mascot-9 img', { opacity: 0, x: 30, scale: 0.96 });
+    gsap.set('#download .doodle-9', { opacity: 0, y: 8 });
+    
     let tlDownload = gsap.timeline({
       scrollTrigger: { 
         trigger: '#download', 
-        start: "top 95%", 
-        end: "bottom 60%", 
-        scrub: 1.5 
+        start: "top 68%", 
+        toggleActions: "play none none reverse"
       }
     });
-    
-    tlDownload.fromTo('#download .download-copy', 
-      { opacity: 0.35, y: 35 },
-      { opacity: 1, y: 0, duration: 1 }
-    )
-    .fromTo('#download .qr-label, #download .qr-desc', 
-      { opacity: 0.4, y: 15 },
-      { opacity: 1, y: 0, duration: 1 },
-      "-=0.6"
-    )
-    .fromTo('#download .qr-wrap img', 
-      { opacity: 0.45, y: 30, scale: 0.94 },
-      { opacity: 1, y: 0, scale: 1, duration: 1 },
-      "-=0.6"
-    )
-    .fromTo('footer', 
-      { opacity: 0.6 },
-      { opacity: 1, duration: 0.5 },
-      "-=0.5"
-    );
+
+    tlDownload
+      .to('#download .download-copy > *', { opacity: 1, y: 0, duration: 0.55, ease: "power3.out", stagger: 0.1 })
+      .to('#download .doodle-7', { opacity: 1, y: 0, duration: 0.3 }, "-=0.2")
+      .to('#download .mascot-7 img', { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.4)" }, "<")
+      .to('#download .mascot-7 img', { opacity: 0.78, scale: 0.97, duration: 0.4 }, "+=0.2")
+      .to('#download .doodle-8', { opacity: 1, y: 0, duration: 0.3 }, "<")
+      .to('#download .mascot-8 img', { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(1.35)" }, "<0.1")
+      .to('#download .house-draw-path', { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, "-=0.1")
+      .to('#download .download-house-bg', { opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" }, "-=0.3")
+      .to('#download .house-draw-overlay', { opacity: 0, duration: 0.3 }, "<")
+      .to('#download .sparkle', { opacity: 1, scale: 1, duration: 0.25, stagger: 0.08 }, "-=0.2")
+      .to('#download .sparkle', { opacity: 0, scale: 0.7, duration: 0.25, stagger: 0.08 }, "+=0.1")
+      .to('#download .qr-label', { opacity: 1, y: 0, duration: 0.3 }, "-=0.4")
+      .to('#download .qr-code-img', { opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" }, "-=0.1")
+      .to('#download .qr-desc', { opacity: 1, y: 0, duration: 0.3 }, "-=0.1")
+      .to('#download .doodle-9', { opacity: 1, y: 0, duration: 0.3 }, "-=0.1")
+      .to('#download .mascot-9 img', { opacity: 1, x: 0, scale: 1, duration: 0.55, ease: "power3.out" }, "<0.05")
+      .to('#download .mascot-9 img', { y: -4, duration: 0.2, yoyo: true, repeat: 1, ease: "power1.inOut" }, "+=0.1")
+      .to('#download .bottom-house-path', { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, "-=0.2")
+      .to('#download .landscape .house', { scale: 1.12, duration: 0.15, yoyo: true, repeat: 1 }, "+=0.05");
   });
 
   // Mobile / Reduced Motion Fallback
@@ -473,6 +577,6 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
     
     animateSection('#community', '.copy-block .num, .copy-block .eyebrow, .copy-block h2, .copy-block p, .community-art');
     animateSection('#vision', '.section-head .eyebrow, .section-head h2, .vision-item');
-    animateSection('#download', '.download-copy .eyebrow, .download-copy h2, .download-copy p, .qr-wrap');
+    animateSection('#download', '.download-copy > *, .mascot-7, .mascot-8, .download-house, .mascot-9');
   });
 }

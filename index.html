@@ -13,7 +13,7 @@
 <body>
   <header class="brandbar">
     <a class="brand" href="#hero" aria-label="HOME SURI HOME 홈으로 이동">
-      <span class="brand-icon">⌂</span>
+      <span class="brand-icon"><svg class="brand-house" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10L12 3l9 7"/><path d="M5 10v11h14V10"/><path d="M10 21v-7h4v7"/></svg></span>
       <span>
         <strong>HomeSuriHome</strong>
         <small>우리 집 수리의 모든 것</small>
@@ -164,7 +164,7 @@
           </div>
         </div>
         <div class="feature-art wide-card">
-          <img src="img/ai_repair.png" alt="AI가 수도꼭지 누수를 분석하는 장면" />
+          <img src="img/ai_repair.png" width="1672" height="941" alt="AI가 수도꼭지 누수를 분석하는 장면" />
         </div>
       </div>
     </section>
@@ -195,7 +195,7 @@
           <p>비슷한 문제, 비슷한 고민.<br>해결한 사람들의 이야기를 확인해보세요.</p>
         </div>
         <div class="community-art">
-          <img src="img/community.png" alt="홈수리홈 커뮤니티 후기와 수리 사례" />
+          <img src="img/community.png" width="1536" height="1024" alt="홈수리홈 커뮤니티 후기와 수리 사례" />
         </div>
       </div>
     </section>
@@ -267,22 +267,54 @@
       </div>
     </section>
 
-    <section id="download" class="section download reveal">
+    <section id="download" class="section download">
       <div class="container download-card">
         <div class="download-copy">
+          <div class="mascot-7">
+            <span class="handwritten-doodle doodle-7">고민중...</span>
+            <img src="img/7.png" alt="고민하는 비버" />
+          </div>
           <p class="eyebrow">HomeSuriHome</p>
           <h2>우리 집 수리,<br><em>홈수리홈과 함께.</em></h2>
           <p>혼자서도 쉽게, 더 똑똑하게.<br>QR 코드를 스캔해 HomeSuriHome을 만나보세요.</p>
         </div>
-        <div class="qr-wrap">
-          <div class="qr-label">앱 다운로드</div>
-          <img src="img/qr_code.png" alt="HOME SURI HOME 앱 다운로드 QR 코드" />
-          <p class="qr-desc">QR을 스캔하고 HomeSuriHome을 만나보세요</p>
+        
+        <div class="download-story">
+          <div class="mascot-8">
+            <span class="handwritten-doodle doodle-8">해결 완료!</span>
+            <img src="img/8.png" alt="해결 완료 비버" />
+          </div>
+        </div>
+        
+        <div class="download-right">
+          <div class="download-house">
+            <img src="img/10.png" class="download-house-bg" alt="">
+            <div class="house-draw-overlay">
+              <svg viewBox="0 0 350 450" class="house-outline-svg">
+                <path class="house-draw-path" d="M175,30 L30,160 L30,420 L320,420 L320,160 Z" />
+              </svg>
+            </div>
+            <div class="sparkles-container">
+              <span class="sparkle s1">✦</span>
+              <span class="sparkle s2">✦</span>
+              <span class="sparkle s3">✦</span>
+            </div>
+            <div class="download-house-content">
+              <div class="qr-label">앱 다운로드</div>
+              <img src="img/qr_code.png" alt="HOME SURI HOME 앱 다운로드 QR 코드" class="qr-code-img" />
+              <p class="qr-desc">QR을 스캔하고<br>HomeSuriHome을 만나보세요</p>
+            </div>
+          </div>
+          
+          <div class="mascot-9">
+            <span class="handwritten-doodle doodle-9">안내해줄게요!</span>
+            <img src="img/9.png" alt="안내하는 비버" />
+          </div>
         </div>
       </div>
       <div class="landscape" aria-hidden="true">
         <span class="hill h1"></span><span class="hill h2"></span>
-        <span class="house">⌂</span><span class="tree t1">♣</span><span class="tree t2">♣</span>
+        <svg class="house" viewBox="0 0 24 24" fill="none" stroke="#9A623C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path class="bottom-house-path" d="M3 10L12 3l9 7"/><path class="bottom-house-path" d="M5 10v11h14V10"/><path class="bottom-house-path" d="M10 21v-7h4v7"/></svg><span class="tree t1">♣</span><span class="tree t2">♣</span>
       </div>
     </section>
   </main>
@@ -294,6 +326,8 @@
     </div>
   </footer>
 
+
+  <nav class="section-capsule-indicator" aria-label="Section Scroll Indicator"></nav>
 
   <div class="beaver-guide" aria-hidden="true">
     <img src="./img/beaver_follower.png" alt="홈수리홈 비버 캐릭터" />
